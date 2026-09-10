@@ -766,7 +766,7 @@
 
     <script>
     const firebaseConfig = {
-          apiKey: "x",
+          apiKey: "AIzaSyBXTaZtCuLfv51lwOMRJf32KtjYNDVS8P8",
           authDomain: "suroboyo-65f2f.firebaseapp.com",
           databaseURL: "https://suroboyo-65f2f-default-rtdb.asia-southeast1.firebasedatabase.app",
           projectId: "suroboyo-65f2f",
@@ -1218,8 +1218,8 @@
             return chatState.messages.length - 1;
         }
 
-        // URL endpoint Vercel kamu (dari folder api/peat-chat.js). GANTI setelah deploy.
-        const AI_API_URL = "https://triosuroboyo.vercel.app/api/peat-chat";";
+        // URL endpoint API. Pakai path relatif supaya otomatis ikut domain manapun project ini di-deploy.
+        const AI_API_URL = "/api/peat-chat";
 
         async function getAIResponse(userText) {
             try {
