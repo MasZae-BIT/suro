@@ -456,19 +456,19 @@
                   <p class="text-[11px] text-gray-400 font-medium mb-6">Data mentah langsung dari ESP32 lewat Firebase</p>
                   <div class="grid grid-cols-3 gap-4">
                       <div class="bg-gray-50 rounded-2xl p-4 text-center">
-                          <p class="text-gray-400 text-[10px] font-semibold uppercase mb-1">Suhu</p>
-                          <p id="indikator-suhu" class="text-2xl font-bold text-gray-900">-</p>
-                          <p class="text-gray-400 text-[10px]">°C</p>
-                      </div>
-                      <div class="bg-gray-50 rounded-2xl p-4 text-center">
-                          <p class="text-gray-400 text-[10px] font-semibold uppercase mb-1">Kelembaban Udara</p>
-                          <p id="indikator-udara" class="text-2xl font-bold text-gray-900">-</p>
-                          <p class="text-gray-400 text-[10px]">%</p>
-                      </div>
-                      <div class="bg-gray-50 rounded-2xl p-4 text-center">
                           <p class="text-gray-400 text-[10px] font-semibold uppercase mb-1">Kelembaban Tanah</p>
                           <p id="indikator-tanah" class="text-2xl font-bold text-gray-900">-</p>
                           <p class="text-gray-400 text-[10px]">%</p>
+                      </div>
+                      <div class="bg-gray-50 rounded-2xl p-4 text-center">
+                          <p class="text-gray-400 text-[10px] font-semibold uppercase mb-1">Tinggi Muka Air</p>
+                          <p id="indikator-tma" class="text-2xl font-bold text-gray-900">-</p>
+                          <p class="text-gray-400 text-[10px]">cm</p>
+                      </div>
+                      <div class="bg-gray-50 rounded-2xl p-4 text-center">
+                          <p class="text-gray-400 text-[10px] font-semibold uppercase mb-1">Curah Hujan</p>
+                          <p id="indikator-hujan" class="text-2xl font-bold text-gray-900">-</p>
+                          <p class="text-gray-400 text-[10px]">mm</p>
                       </div>
                   </div>
                   <p id="indikator-status" class="text-[11px] text-gray-400 font-medium mt-4">Menunggu data dari Firebase...</p>
@@ -1335,14 +1335,19 @@
 
         function renderIndikatorPage() {
             const lastData = window.__peatApp && window.__peatApp.lastData;
-            const suhuEl = document.getElementById("indikator-suhu");
-            const udaraEl = document.getElementById("indikator-udara");
+            const lastComputed = window.__peatApp && window.__peatApp.lastComputed;
+            const history = (window.__peatApp && window.__peatApp.history) || [];
             const tanahEl = document.getElementById("indikator-tanah");
+            const tmaEl = document.getElementById("indikator-tma");
+            const hujanEl = document.getElementById("indikator-hujan");
             const statusEl = document.getElementById("indikator-status");
             if (lastData) {
-                if (suhuEl) suhuEl.textContent = Number(lastData.suhu ?? 0).toFixed(1);
-                if (udaraEl) udaraEl.textContent = Number(lastData.kelembaban_udara ?? 0).toFixed(1);
-                if (tanahEl) tanahEl.textContent = Number(lastData.kelembaban_tanah ?? 0).toFixed(1);
+                const tanah = Number(lastData.kelembaban_tanah ?? 0);
+                const tma = lastData.tma !== undefined ? Number(lastData.tma) : (lastComputed ? lastComputed.tma : estimateTMA(tanah));
+                const hujanHariIni = history.length ? Number(history[history.length - 1].hujanEstimasi || 0) : 0;
+                if (tanahEl) tanahEl.textContent = tanah.toFixed(1);
+                if (tmaEl) tmaEl.textContent = tma.toFixed(1);
+                if (hujanEl) hujanEl.textContent = hujanHariIni.toFixed(1);
                 if (statusEl) statusEl.textContent = "Data terakhir diterima pukul " + new Date().toLocaleTimeString("id-ID") + " dari Firebase.";
             } else if (statusEl) {
                 statusEl.textContent = "Menunggu data dari Firebase...";
